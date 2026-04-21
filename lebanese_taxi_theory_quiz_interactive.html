@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار السوق العمومي</title>
+<style>
+body { font-family: Arial; background:#f5f5f5; padding:20px; }
+h2 { text-align:center }
+.question { background:white; padding:15px; margin-bottom:15px; border-radius:10px; }
+.option { padding:10px; margin:5px 0; border-radius:6px; cursor:pointer; border:1px solid #ccc; }
+.correct { background:#4CAF50; color:white; }
+.wrong { background:#f44336; color:white; }
+button { padding:10px 15px; margin:10px 5px; border:none; border-radius:8px; cursor:pointer }
+#controls { text-align:center; margin-bottom:20px }
+</style>
+</head>
+<body>
+<h2>🚖 اختبار السوق العمومي</h2>
+
+<div id="controls">
+<button onclick="resetQuiz()">🔄 إعادة المحاولة</button>
+<button onclick="shuffleQuestions()">🔀 خلط الأسئلة</button>
+</div>
+
+<div id="quiz"></div>
+
+<script>
+let questions = [
+{q:"يمنع التوقف ضمن مسافة من التقاطع؟", options:["10 متر","25 متر","40 متر"], correct:1},
+{q:"يمنع التوقف لاستجلاب ركاب؟", options:["قرب التقاطعات","على المنعطفات","كل ما ورد"], correct:2},
+{q:"على السائقين التقيد بقاعدة؟", options:["افساح المرور","حق المرور","كل ما ورد"], correct:2},
+{q:"حق المرور يعتبر من؟", options:["الحقوق العقارية","حقوق السائقين","حقوق المشاة"], correct:0},
+{q:"افساح الطريق يعتبر؟", options:["قاعدة دولية","متعارف محلياً","كرم اخلاق"], correct:0},
+{q:"الحوار مع الركاب يؤثر على؟", options:["التركيز","تعدد المهام","كل ما ورد"], correct:2},
+{q:"عند وجود مخاطر يجب؟", options:["التمهل","مضاعفة الانتباه","كل ما ورد"], correct:2},
+{q:"نظافة السيارة؟", options:["اختياري","الزامي","عام"], correct:1},
+{q:"التاكسيميتر مطلوب في؟", options:["شركات","افراد","كلها"], correct:2},
+{q:"السرعة داخل المدن؟", options:["50","80","100"], correct:0},
+
+{q:"سلامة الإطارات ترتبط؟", options:["عمر الإطار","نوعية الإطار","كل ما ورد"], correct:2},
+{q:"الوزن الإجمالي للمركبة يجب؟", options:["عدم تجاوزه","تجاوزه مسموح","غير مهم"], correct:0},
+{q:"تشغيل التاكسيميتر لضبط؟", options:["المسافة والوقت مع التوقف","بدون توقف","المسافة فقط"], correct:0},
+{q:"الحد الأقصى للسرعة داخل المناطق السكنية؟", options:["50 كم/س","80 كم/س","100 كم/س"], correct:0},
+{q:"عند اقترابك من تقاطع بدون إشارات؟", options:["تتابع السير","تخفف وتفسح اليمين","تشغل العالي"], correct:1},
+{q:"الغرض من حزام الأمان؟", options:["تزيين","حماية","لا فائدة"], correct:1},
+{q:"عند الضوء الأحمر؟", options:["تتابع","تتوقف","تسرع"], correct:1},
+{q:"متى تشغيل الأضواء الرباعية؟", options:["توقف اضطراري","داخل المدينة","عند التجاوز"], correct:0},
+{q:"تحميل الحقائب يكون؟", options:["حضن الراكب","الصندوق","أي مكان"], correct:1},
+{q:"عند تحميل الركاب؟", options:["أماكن مخصصة","أي مكان","منعطفات"], correct:0},
+{q:"عند وجود أمتعة كبيرة؟", options:["لا تعيق الرؤية","فوق المقاعد","تمنع الأبواب"], correct:0},
+{q:"استلام الأجرة يكون؟", options:["أثناء القيادة","بعد التوقف","بسرعة"], correct:1},
+{q:"عدد الركاب؟", options:["حسب المقاعد","وقوف","مضاعف"], correct:0},
+{q:"التوقف لإصعاد الركاب؟", options:["أماكن مخصصة","أي مكان","حسب السائق"], correct:0},
+{q:"نقل أمتعة كبيرة؟", options:["لا تعيق الأبواب","15 سم","30 سم"], correct:0},
+{q:"عند راكب يحمل غاز؟", options:["إذا محكمة","ممنوع","بموافقة"], correct:1},
+{q:"تصنيف الطرق؟", options:["3 فئات","4","5"], correct:0},
+{q:"التسجيل بالضمان؟", options:["مالك/غير مالك","لبناني/أجنبي","خاص/عمومي"], correct:0},
+{q:"اشتراكات الضمان؟", options:["تقاعد","مالك","غير مالك"], correct:2},
+{q:"التسجيل بالضمان؟", options:["طلب وقبول","فوراً","اختياري"], correct:0},
+{q:"التأخر بالدفع؟", options:["توقف خدمات","غرامة","كل ما ورد"], correct:2},
+{q:"مدة العمل الأسبوعي؟", options:["35","48","60"], correct:1},
+{q:"استخدام الهاتف؟", options:["رسائل","سماعة","توقف"], correct:1},
+{q:"إفساح الطريق للمشاة؟", options:["عند الاقتراب","عند النزول","بعد النزول"], correct:1},
+{q:"القيادة مع سيارة أخرى؟", options:["يسمح","بعض الطرق","لا يسمح"], correct:2},
+{q:"نقل الركاب بسيارة خصوصية؟", options:["مسموح","خارج المدن","لا يسمح"], correct:2}
+,
+{q:"التعرفة تحدد من؟", options:["وزارة النقل","النقابات","السائق"], correct:0},
+{q:"حمولة على السطح تؤدي إلى؟", options:["انقلاب","زيادة وقود","كل ما ورد"], correct:2},
+{q:"نظام النقاط في لبنان؟", options:["10","12","20"], correct:1},
+{q:"عند إهانة من راكب؟", options:["المعاملة بالمثل","الهدوء","التبليغ"], correct:1},
+{q:"السرعة داخل المدن دون إشارات؟", options:["50","80","100"], correct:0},
+{q:"التوقف للركاب؟", options:["أماكن مخصصة","أي مكان","حسب الطلب"], correct:0},
+{q:"هدف العمل النقابي؟", options:["حماية الحقوق","السياسة","كل ما ورد"], correct:0},
+{q:"السجل المروري يؤدي إلى؟", options:["سحب مؤقت","إلغاء","كل ما ورد"], correct:2},
+{q:"السلاح في السيارة؟", options:["بلدية","عدد","أمني"], correct:2},
+{q:"إشارة الشرطي أم الضوئية؟", options:["الضوئية","الشرطي","افساح"], correct:1},
+{q:"في المستديرة؟", options:["الداخل","الدخول","الأسرع"], correct:0},
+{q:"الوقوف المتمادي؟", options:["15 يوم","20","30"], correct:2},
+{q:"عدم ربط حزام لقاصر؟", options:["السائق","الأهل","الراكب"], correct:0},
+{q:"لوحة TAXI تضاء؟", options:["دائماً","ليل","فارغة"], correct:2},
+{q:"نقل دراجة؟", options:["يسمح","أماكن","لا يسمح"], correct:2},
+{q:"قطر سيارة؟", options:["أصغر","نفس الوزن","لا يسمح"], correct:2},
+{q:"حديث مع الركاب؟", options:["حسب الراكب","السائق","كلاهما"], correct:0},
+{q:"توضيح التعرفة؟", options:["قبل الركوب","بعد","عند السؤال"], correct:0}
+];
+
+const quiz = document.getElementById("quiz");
+
+function renderQuiz() {
+  quiz.innerHTML = "";
+  questions.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `<p>${i+1}. ${q.q}</p>`;
+
+    q.options.forEach((opt, index) => {
+      const btn = document.createElement("div");
+      btn.className = "option";
+      btn.innerText = opt;
+
+      btn.onclick = () => {
+        const all = div.querySelectorAll(".option");
+        all.forEach((el, idx) => {
+          el.style.pointerEvents = "none";
+          if(idx === q.correct) el.classList.add("correct");
+        });
+
+        if(index === q.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      };
+
+      div.appendChild(btn);
+    });
+
+    quiz.appendChild(div);
+  });
+}
+
+function resetQuiz() {
+  renderQuiz();
+}
+
+function shuffleQuestions() {
+  questions.sort(() => Math.random() - 0.5);
+  renderQuiz();
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
